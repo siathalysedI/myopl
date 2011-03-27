@@ -12,9 +12,12 @@ enum TokenType {
 
 	// Operators
 	TOKEN_PLUS,
-	TOKEN_SUBTRACT,
+	TOKEN_MINUS,
 	TOKEN_MULTIPLY,
 	TOKEN_DIVIDE,	
+
+	// Comparison
+	TOKEN_EQUALTO,
 
 	// Numbers
 	TOKEN_INTEGER,

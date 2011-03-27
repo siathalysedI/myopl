@@ -9,7 +9,14 @@ int main(int argc, char **argv) {
 
 	string lineInput;
 	while(getline(cin,lineInput)) {
-		vector<Token*> tokens = tokenizeLine(lineInput, 1);
+
+		vector<Token*> tokens;	
+
+		try {
+			tokens = tokenizeLine(lineInput, 1);
+		} catch(string error) {
+			cout << "Error: " << error << endl;
+		}
 
 		for(int i = 0; i < tokens.size(); i++) {
 			cout << tokenToString(tokens[i]) << endl;
