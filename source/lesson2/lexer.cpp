@@ -1,3 +1,6 @@
+// TODO: Prettify
+
+
 #include <iostream>
 #include <sstream>
 #include "lexer.h"
@@ -9,6 +12,7 @@ struct SymbolToken {
 };
 
 // These need to be in reverse size order (important)
+
 SymbolToken SymbolTokenMap [] = {
 	{"==", TOKEN_EQUALTO},
 	{"(", TOKEN_OPENBRACKET},
@@ -21,17 +25,22 @@ SymbolToken SymbolTokenMap [] = {
 	{"", TOKEN_UNKNOWN}, // Used to indicate end of array
 };
 
-int parseInt(string s) {
-	int i = 0;
+// Utility functions
+
+bool parseInt(string s, int *value) {
 	stringstream ss(s);
-	ss >> i;
-	return i;
+	if((ss >> *value).fail())
+		return false;
+	return true;
 }
 
-string intToString(int i) {
+bool intToString(int i, string *s) {
 	stringstream ss;
-	ss << i;
-	return ss.str();
+	if((ss << i).fail())
+		return false;
+
+	*s = ss.str();
+	return true;
 }
 
 void eatWhiteSpace(string *input) {
@@ -42,13 +51,15 @@ void eatWhiteSpace(string *input) {
 			case '\r':
 			case '\n': // Should never find one of these! But just incase...
 				*input = input->substr(1);
+				continue;
 			default:
 				return;
 		}
 	}
 }
 
-// This function checks if a symbol is the next token
+// This function reads a symbol if its the next Token
+
 Token *getSymbolToken(string *input) {
 	for(int i = 0; SymbolTokenMap[i].type != TOKEN_UNKNOWN; i++) {
 		SymbolToken s = SymbolTokenMap[i];
@@ -72,8 +83,10 @@ Token *getSymbolToken(string *input) {
 
 Token * getNumberToken(string *input) {
 
+	if(input->length() < 0 || input->at(0) < '0' || input->at(0) > '9')
+		return NULL;
+	
 	int endi = -1;
-
 	for(int i = 1; i < input->length(); i++) {
 		if(input->at(i) < '0' || input->at(i) > '9') {
 			endi = i;
@@ -82,7 +95,6 @@ Token * getNumberToken(string *input) {
 	}
 
 	string numberString;
-
 	if(endi == -1) {
 		numberString = *input;
 		*input = "";
@@ -91,7 +103,11 @@ Token * getNumberToken(string *input) {
 		*input = input->substr(endi);
 	}
 
-	return new IntegerToken(parseInt(numberString));
+	int value;
+	if(parseInt(numberString, &value)) 
+		return new IntegerToken(value);
+
+	throw("Can't convert number to integer: " + numberString);
 }
 
 Token *getNextToken(string *input) {
@@ -102,12 +118,11 @@ Token *getNextToken(string *input) {
 
 	// First check if its a symbol
 	t = getSymbolToken(input);	
-	if(t)
-		return t;
+	if(t) return t;
 	
-	// Is it a Number
-	if(input->at(0) >= '0' && input->at(0) <= '9')	
-		return getNumberToken(input);
+	// Is it a Number?
+	t = getNumberToken(input);	
+	if(t) return t;
 
 	//Unable to determine token type, thow an error
 	string errorMessage("Unexpected input:");
@@ -135,9 +150,12 @@ std::string tokenToString(Token *t) {
 		if(t->type == SymbolTokenMap[i].type)
 			return SymbolTokenMap[i].symbol;
 
+	string s;
+
 	switch(t->type) {
-		case TOKEN_INTEGER:	
-			return intToString(((IntegerToken*)t)->value);
+		case TOKEN_INTEGER:				
+			intToString(((IntegerToken*)t)->value, &s);
+			return s;
 
 		case TOKEN_IDENTIFIER: return "<id>";
 	}
