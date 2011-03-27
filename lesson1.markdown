@@ -253,7 +253,7 @@ The operator functions are defined as follows:
 Each operator does a basic check to make sure its operating on  two numbers, throwing an error if they are not.
 
 ##Part 4: Putting it all together
-The source code for this lesson can be found here: <INSERT LINK>
+[The source code for this lesson can be found here.](https://github.com/tm1rbrt/myopl/blob/master/source/lesson1/main.cpp)
 
 To compile use `g++ main.cpp -o lesson1.exe -static`
 

@@ -2,6 +2,10 @@
 #include "lexer.h"
 using namespace std;
 
+struct statement {
+//	StatementType type;
+};
+
 int main(int argc, char **argv) {
 
 	cout << "Enter one or more statements and press enter"
